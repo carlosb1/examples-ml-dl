@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 path = os.getcwd() + '/data/ex1data1.txt'
 data=pd.read_csv(path,header=None,names=['Population','Profit'])
 
-#print data.head()
-#print data.describe()
+print data.head()
+print data.describe()
 
 #data.plot(kind='scatter',x='Population',y='Profit', figsize=(12,8))
 
@@ -48,5 +48,34 @@ theta=np.matrix(np.array([0,0]))
 alpha=0.01
 iters=1000
 
+#Find optim result
 g, cost = gradientDescent(X, y, theta, alpha, iters)
 print g
+
+#Check result
+result = computeCost(X,y,g)
+print result
+
+#View results
+
+x = np.linspace(data.Population.min(), data.Population.max(),100)
+f = g[0,0] + (g[0,1]*x)
+
+fig, ax = plt.subplots(figsize=(12,8))
+
+ax.plot(x,f,'r', label='Predicton',)
+ax.scatter(data.Population, data.Profit, label='Training Data')
+ax.legend(loc=2)
+ax.set_xlabel('Population')
+ax.set_ylabel('Profit')
+ax.set_title('Predicted Profit vs Population size')
+
+fig , ax = plt.subplots(figsize=(12,8))
+ax.plot(np.arange(iters),cost,'r')
+ax.set_xlabel('Iterations')
+ax.set_ylabel('Cost')
+ax.set_title('Error vs Trainng Epoch')
+
+
+
+plt.show()

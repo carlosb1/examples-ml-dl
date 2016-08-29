@@ -9,7 +9,7 @@ data=pd.read_csv(path,header=None,names=['Population','Profit'])
 print data.head()
 print data.describe()
 
-#data.plot(kind='scatter',x='Population',y='Profit', figsize=(12,8))
+
 
 def computeCost(X, y, theta):
     inner = np.power(((X* theta.T) - y),2)

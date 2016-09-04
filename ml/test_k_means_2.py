@@ -9,7 +9,7 @@ def init_centroids(X, k):
     centroids = np.zeros((k,n))
     idx = np.random.randint(0,m,k)
 
-    for i in range(K):
+    for i in range(k):
         centroids[i,:] = X[idx[i],:]
     return centroids
 
@@ -51,22 +51,31 @@ def run_k_means(X, initial_centroids, max_iters):
 
 
 
-data = loadmat('data/ex7data2.mat')  
-X = data['X']  
-initial_centroids = initial_centroids = np.array([[3, 3], [6, 2], [8, 5]])
+image_data = loadmat('data/bird_small.mat')  
+A = image_data['A']
 
+#normalize value ranges
+A = A / 255.
 
+#reshape the array
+
+X = np.reshape(A, (A.shape[0] * A.shape[1],A.shape[2]))
+
+#randomly initialize the centroids
+initial_centroids = init_centroids(X,16)
+
+#run algorithm
 idx, centroids = run_k_means(X, initial_centroids, 10)  
 
+# get the closest centroids one last time
+idx = find_closest_centroids(X, centroids)
 
+# map each pixel to the centroid value
+X_recovered = centroids[idx.astype(int),:]
 
-cluster1 = X[np.where(idx == 0)[0],:]  
-cluster2 = X[np.where(idx == 1)[0],:]  
-cluster3 = X[np.where(idx == 2)[0],:]
+# reshape to the original dimensions
+X_recovered = np.reshape(X_recovered, (A.shape[0], A.shape[1], A.shape[2]))
 
-fig, ax = plt.subplots(figsize=(12,8))  
-ax.scatter(cluster1[:,0], cluster1[:,1], s=30, color='r', label='Cluster 1')  
-ax.scatter(cluster2[:,0], cluster2[:,1], s=30, color='g', label='Cluster 2')  
-ax.scatter(cluster3[:,0], cluster3[:,1], s=30, color='b', label='Cluster 3')  
-ax.legend()
+plt.imshow(X_recovered)
+
 plt.show()

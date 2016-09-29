@@ -62,6 +62,7 @@ pclass_xt_pct.plot(kind='bar',
 
 plt.xlabel('Passenger Class')
 plt.ylabel('Survival Rate')
+#######################################################
 
 #Feature Sex
 sexes=sorted(df_train['Sex'].unique())
@@ -88,7 +89,7 @@ females_xt_pct = females_xt.div(females_xt.sum(1).astype(float),axis=0)
 females_xt_pct.plot(kind='bar',stacked=True,title='Female Survival Rate by Passenger Class')
 plt.xlabel('Passenger Class')
 plt.ylabel('Survival Rate')
-
+##################################################################
 
 
 males_df = df_train[df_train['Sex'] == 'male']
@@ -146,7 +147,7 @@ for portIdx in embarked_locs:
 df_train=pd.concat([df_train,pd.get_dummies(df_train['Embarked_Val'],prefix='Embarked_Val')],axis=1)
 print df_train
 
-#Age 
+#Feature  Age
 
 df_train[df_train['Age'].isnull()][['Sex','Pclass','Age']].head()
 df_train['AgeFill']= df_train['Age']
@@ -173,7 +174,7 @@ axes[0].set_ylabel('Count')
 #axes[1].set_title('Survivors by Age Plot')
 #axes[1].set_xlabel('Survived')
 #axes[1].set_ylabel('Age')
-
+###########################################################
 
 for pclass in passenger_classes:
     df_train.AgeFill[df_train.Pclass == pclass].plot(kind='kde')
@@ -287,7 +288,8 @@ def clean_data(df, drop_passenger_id):
         df = df.drop(['PassengerId'],axis=1)
     return df
 
-
+#######################################################################################################
+##################################### It is applied RandomForestClassifier ############################
 from sklearn.ensemble import RandomForestClassifier
 clf = RandomForestClassifier(n_estimators=100)
 

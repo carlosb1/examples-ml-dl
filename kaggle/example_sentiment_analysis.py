@@ -105,5 +105,11 @@ lr_tfidf = Pipeline([('vect', tfidf),('clf', LogisticRegression(random_state=0))
 gs_lr_tfidf = GridSearchCV(lr_tfidf, param_grid,scoring='accuracy',cv=5, verbose=1, n_jobs=-1)
 print gs_lr_tfidf.fit(X_train, y_train)
 
+print('Best parameter set: %s ' % gs_lr_tfidf.best_params_)
+print('CV Accuracy: %.3f' % gs_lr_tfidf.best_score_)
+
+clf = gs_lr_tfidf.best_estimator_
+print('Test Accuracy: %.3f' % clf.score(X_test, y_test))
+
 from sklearn.externals import joblib
 joblib.dump(gs_lr_tfidf.best_estimator_, 'filename.pkl')

@@ -4,3 +4,6 @@
 [submodule "MLAlgorithms"]
 	path = MLAlgorithms
 	url = https://github.com/rushter/MLAlgorithms.git
+[submodule "ipython-notebooks"]
+	path = ipython-notebooks
+	url = https://github.com/jdwittenauer/ipython-notebooks.git

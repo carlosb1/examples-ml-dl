@@ -6,3 +6,4 @@ References:
 - ml-class-master: https://github.com/merwan/ml-class
 - lectures : Added Oxford Deep NLP 2017 course from https://github.com/oxford-cs-deepnlp-2017/lectures.git
 - MLAlgorithms: Reference to project with ML algorithms from Scratch
+- ipython-notebooks: python notebooks to explain ML/DL

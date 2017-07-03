@@ -7,3 +7,6 @@
 [submodule "ipython-notebooks"]
 	path = ipython-notebooks
 	url = https://github.com/jdwittenauer/ipython-notebooks.git
+[submodule "python-machine-learning-book"]
+	path = python-machine-learning-book
+	url = https://github.com/rasbt/python-machine-learning-book.git

@@ -1,3 +1,6 @@
 [submodule "lectures"]
 	path = lectures
 	url = https://github.com/oxford-cs-deepnlp-2017/lectures.git
+[submodule "MLAlgorithms"]
+	path = MLAlgorithms
+	url = https://github.com/rushter/MLAlgorithms.git

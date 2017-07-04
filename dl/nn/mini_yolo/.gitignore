@@ -1,0 +1,4 @@
+model/
+test_resources/
+*.pyc
+**/*.pyc

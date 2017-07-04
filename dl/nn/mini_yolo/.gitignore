@@ -2,3 +2,5 @@ model/
 test_resources/
 *.pyc
 **/*.pyc
+result.bmp
+.*.swp

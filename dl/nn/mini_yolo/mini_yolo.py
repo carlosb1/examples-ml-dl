@@ -1,10 +1,19 @@
-# code based on:
-#YAD2K https://github.com/allanzelener/YAD2K
-#darkflow https://github.com/thtrieu/darkflow
-#Darknet.keras https://github.com/sunshineatnoon/Darknet.keras
+
 
 import numpy as np
 import cv2
+import glob
+from moviepy.editor import VideoFileClip
+from IPython.display import HTML
+
+import keras
+from keras.models import Sequential
+from keras.layers.convolutional import Convolution2D, MaxPooling2D
+from keras.layers.advanced_activations import LeakyReLU
+from keras.layers.core import Flatten, Dense, Activation, Reshape
+
+
+
 
 def load_weights(model,yolo_weight_file):
                 
@@ -96,26 +105,61 @@ def yolo_net_out_to_car_boxes(net_out, threshold = 0.2, sqrt=1.8,C=20, B=2, S=7)
     
     return boxes
 
-def draw_box(boxes,im,crop_dim):
-    imgcv = im
-    [xmin,xmax] = crop_dim[0]
-    [ymin,ymax] = crop_dim[1]
-    for b in boxes:
-        h, w, _ = imgcv.shape
-        left  = int ((b.x - b.w/2.) * w)
-        right = int ((b.x + b.w/2.) * w)
-        top   = int ((b.y - b.h/2.) * h)
-        bot   = int ((b.y + b.h/2.) * h)
-        left = int(left*(xmax-xmin)/w + xmin)
-        right = int(right*(xmax-xmin)/w + xmin)
-        top = int(top*(ymax-ymin)/h + ymin)
-        bot = int(bot*(ymax-ymin)/h + ymin)
 
-        if left  < 0    :  left = 0
-        if right > w - 1: right = w - 1
-        if top   < 0    :   top = 0
-        if bot   > h - 1:   bot = h - 1
-        thick = int((h + w) // 150)
-        cv2.rectangle(imgcv, (left, top), (right, bot), (255,0,0), thick)
 
-    return imgcv
+class MiniYolo():
+    def __init__(self):
+        keras.backend.set_image_dim_ordering('th')
+        self.model = Sequential()
+	self.model.add(Convolution2D(16, 3, 3,input_shape=(3,448,448),border_mode='same',subsample=(1,1)))
+	self.model.add(LeakyReLU(alpha=0.1))
+	self.model.add(MaxPooling2D(pool_size=(2, 2)))
+	self.model.add(Convolution2D(32,3,3 ,border_mode='same'))
+	self.model.add(LeakyReLU(alpha=0.1))
+	self.model.add(MaxPooling2D(pool_size=(2, 2),border_mode='valid'))
+	self.model.add(Convolution2D(64,3,3 ,border_mode='same'))
+	self.model.add(LeakyReLU(alpha=0.1))
+	self.model.add(MaxPooling2D(pool_size=(2, 2),border_mode='valid'))
+	self.model.add(Convolution2D(128,3,3 ,border_mode='same'))
+	self.model.add(LeakyReLU(alpha=0.1))
+	self.model.add(MaxPooling2D(pool_size=(2, 2),border_mode='valid'))
+	self.model.add(Convolution2D(256,3,3 ,border_mode='same'))
+	self.model.add(LeakyReLU(alpha=0.1))
+	self.model.add(MaxPooling2D(pool_size=(2, 2),border_mode='valid'))
+	self.model.add(Convolution2D(512,3,3 ,border_mode='same'))
+	self.model.add(LeakyReLU(alpha=0.1))
+	self.model.add(MaxPooling2D(pool_size=(2, 2),border_mode='valid'))
+	self.model.add(Convolution2D(1024,3,3 ,border_mode='same'))
+	self.model.add(LeakyReLU(alpha=0.1))
+	self.model.add(Convolution2D(1024,3,3 ,border_mode='same'))
+	self.model.add(LeakyReLU(alpha=0.1))
+	self.model.add(Convolution2D(1024,3,3 ,border_mode='same'))
+	self.model.add(LeakyReLU(alpha=0.1))
+	self.model.add(Flatten())
+	self.model.add(Dense(256))
+	self.model.add(Dense(4096))
+	self.model.add(LeakyReLU(alpha=0.1))
+	self.model.add(Dense(1470))
+
+    def load_model(self,filepath):
+        #load_weights(self.model,'./model/yolo-tiny.weights')
+        load_weights(self.model,filepath)
+    
+    def predict(self,image):
+        batch = self.pre_process(image)
+        out = self.model.predict(batch)
+        boxes = yolo_net_out_to_car_boxes(out[0], threshold = 0.17)
+        return boxes
+    def pre_process(self,image):
+        image_crop = image[300:650,500:,:]
+        resized = cv2.resize(image_crop,(448,448))
+        batch = np.transpose(resized,(2,0,1))
+        batch = 2*(batch / 255.) -1
+        batch = np.expand_dims(batch,axis=0)
+        return batch
+
+
+
+
+
+

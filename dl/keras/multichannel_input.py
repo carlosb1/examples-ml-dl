@@ -199,6 +199,7 @@ model.fit([trn_cat, trn_real, trn_text], y, batch_size=batch_size, epochs=3, val
 # Submitting
 submit = model.predict([tst_cat, tst_real, tst_text], batch_size=batch_size,verbose=1)
 
+print('submit:'+str(submit))
 submission = pd.read_csv('../input/sample_submission.csv')
 submission['project_is_approved'] = submit
 submission.to_csv('mi_nn.csv', index=False)

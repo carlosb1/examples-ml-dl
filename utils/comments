@@ -1,0 +1,423 @@
+Categorical Inputs
+
+You may have a sequence of categorical inputs, such as letters or statuses.
+
+Generally, categorical inputs are first integer encoded then one hot encoded. That is, a unique integer value is assigned to each distinct possible input, then a binary vector of ones and zeros is used to represent each integer value.
+
+By definition, a one hot encoding will ensure that each input is a small real value, in this case 0.0 or 1.0.
+Real-Valued Inputs
+
+You may have a sequence of quantities as inputs, such as prices or temperatures.
+
+If the distribution of the quantity is normal, then it should be standardized, otherwise the series should be normalized. This applies if the range of quantity values is large (10s 100s, etc.) or small (0.01, 0.0001).
+
+If the quantity values are small (near 0-1) and the distribution is limited (e.g. standard deviation near 1) then perhaps you can get away with no scaling of the series.
+Other Inputs
+
+Problems can be complex and it may not be clear how to best scale input data.
+
+If in doubt, normalize the input sequence. If you have the resources, explore modeling with the raw data, standardized data, and normalized and see if there is a beneficial difference.
+
+    If the input variables are combined linearly, as in an MLP [Multilayer Perceptron], then it is rarely strictly necessary to standardize the inputs, at least in theory. … However, there are a variety of practical reasons why standardizing the inputs can make training faster and reduce the chances of getting stuck in local optima.
+
+— Should I normalize/standardize/rescale the data? Neural Nets FAQ
+Scaling Output Variables
+
+The output variable is the variable predicted by the network.
+
+You must ensure that the scale of your output variable matches the scale of the activation function (transfer function) on the output layer of your network.
+
+    If your output activation function has a range of [0,1], then obviously you must ensure that the target values lie within that range. But it is generally better to choose an output activation function suited to the distribution of the targets than to force your data to conform to the output activation function.
+
+— Should I normalize/standardize/rescale the data? Neural Nets FAQ
+
+The following heuristics should cover most sequence prediction problems:
+Binary Classification Problem
+
+If your problem is a binary classification problem, then the output will be class values 0 and 1. This is best modeled with a sigmoid activation function on the output layer. Output values will be real values between 0 and 1 that can be snapped to crisp values.
+Multi-class Classification Problem
+
+If your problem is a multi-class classification problem, then the output will be a vector of binary class values between 0 and 1, one output per class value. This is best modeled with a softmax activation function on the output layer. Again, output values will be real values between 0 and 1 that can be snapped to crisp values.
+Regression Problem
+
+If your problem is a regression problem, then the output will be a real value. This is best modeled with a linear activation function. If the distribution of the value is normal, then you can standardize the output variable. Otherwise, the output variable can be normalized.
+Other Problem
+
+There are many other activation functions that may be used on the output layer and the specifics of your problem may add confusion.
+
+The rule of thumb is to ensure that the network outputs match the scale of your data.
+Practical Considerations When Scaling
+
+There are some practical considerations when scaling sequence data.
+
+    Estimate Coefficients. You can estimate coefficients (min and max values for normalization or mean and standard deviation for standardization) from the training data. Inspect these first-cut estimates and use domain knowledge or domain experts to help improve these estimates so that they will be usefully correct on all data in the future.
+    Save Coefficients. You will need to normalize new data in the future in exactly the same way as the data used to train your model. Save the coefficients used to file and load them later when you need to scale new data when making predictions.
+    Data Analysis. Use data analysis to help you better understand your data. For example, a simple histogram can help you quickly get a feeling for the distribution of quantities to see if standardization would make sense.
+    Scale Each Series. If your problem has multiple series, treat each as a separate variable and in turn scale them separately.
+    Scale At The Right Time. It is important to apply any scaling transforms at the right time. For example, if you have a series of quantities that is non-stationary, it may be appropriate to scale after first making your data stationary. It would not be appropriate to scale the series after it has been transformed into a supervised learning problem as each column would be handled differently, which would be incorrect.
+    Scale if in Doubt. You probably do need to rescale your input and output variables. If in doubt, at least normalize your data.
+
+Further Reading
+
+This section lists some additional resources to consider when scaling.
+
+    Should I normalize/standardize/rescale the data? Neural Nets FAQ
+    MinMaxScaler scikit-learn API documentation
+    StandardScaler scikit-learn API documentation
+    How to Scale Machine Learning Data from Scratch with Python
+    How to Normalize and Standardize Time Series Data in Python
+    How to Prepare Your Data for Machine Learning in Python with Scikit-Learn
+
+Summary
+
+In this tutorial, you discovered how to scale your sequence prediction data when working with Long Short-Term Memory recurrent neural networks.
+
+Specifically, you learned:
+
+    How to normalize and standardize sequence data in Python.
+    How to select the appropriate scaling for input and output variables.
+    Practical considerations when scaling sequence data.
+
+Do you have any questions about scaling sequence prediction data?
+Ask your question in the comments and I will do my best to answer.
+
+Develop LSTMs for Sequence Prediction Today!
+
+Long Short-Term Memory Networks with Python
+Develop Your Own LSTM models in Minutes
+
+…with just a few lines of python code
+
+Discover how in my new Ebook:
+Long Short-Term Memory Networks with Python
+
+It provides self-study tutorials on topics like:
+CNN LSTMs, Encoder-Decoder LSTMs, generative models, data preparation, making predictions and much more…
+Finally Bring LSTM Recurrent Neural Networks to
+Your Sequence Predictions Projects
+
+Skip the Academics. Just Results.
+
+Click to learn more.
+
+About Jason Brownlee
+Jason Brownlee, Ph.D. is a machine learning specialist who teaches developers how to get results with modern machine learning methods via hands-on tutorials.
+View all posts by Jason Brownlee →	
+A Tour of Recurrent Neural Network Algorithms for Deep Learning
+How to Remove Trends and Seasonality with a Difference Transform in Python
+34 Responses to How to Scale Data for Long Short-Term Memory Networks in Python
+
+    Jack Sheffield July 7, 2017 at 6:33 am #
+
+    Thanks for the post Jason, nice and succinct walk-through on how to scale data. I wanted to share a great course on Experfy that covers Machine Learning, especially supervised learning that I’ve found super helpful in understanding all of this
+    Reply	
+        Jack Sheffield July 7, 2017 at 6:34 am #
+
+        Here’s the link! https://www.experfy.com/training/courses/machine-learning-foundations-supervised-learning
+        Reply	
+        Jason Brownlee July 9, 2017 at 10:32 am #
+
+        Glad to hear it.
+        Reply	
+    Anthony The Koala July 7, 2017 at 9:35 am #
+
+    Dear Dr Jason,
+    When making predictions using the scaled data, do you have to unscale the data, using the
+
+     y (scaled value) = (x-min)/(max-min)
+
+    y * (max - min) + min = actual value 
+    1
+    2
+    3
+    	
+     y (scaled value) = (x-min)/(max-min)
+     
+    y * (max - min) + min = actual value 
+
+    OR
+
+     y * std_dev + mean = actual value 
+    1
+    	
+     y * std_dev + mean = actual value 
+
+    Thank you
+    Reply	
+        Jason Brownlee July 9, 2017 at 10:34 am #
+
+        After the prediction, yes, in order to make use if it or have error scores in the correct scale for apples to apples comparison of models.
+        Reply	
+    Natallia Lundqvist July 7, 2017 at 10:28 pm #
+
+    Hi Jason, thank you once again for sharing your great ideas! I work with seq2seq application on text input of variable length with very large vocabulary (several thousand entries). Obviously, padding and one_hot_encode are necessary in this case. If one uses keras.tokenizer.texts_to_sequences(…) and then keras.tokenizer.sequences_to_matrix(sequence, mode=’binary’), one gets 2D-tensor which can not be fitted directly into LSTMs.
+
+    For example:
+    seq_test = tokenizer.texts_to_sequences(input_text_sequence)
+
+    seq_test[:4]
+    Out[16]: [[1, 2, 110], [23, 5, 150], [1, 3, 17], [8, 2, 218, 332]]
+
+    X_test = tokenizer.sequences_to_matrix(seq_test, mode=’binary’)
+
+    X_test[:4,:]
+    Out[18]:
+    array([[ 0., 1., 1., …, 0., 0., 0.],
+    [ 0., 0., 0., …, 0., 0., 0.],
+    [ 0., 1., 0., …, 0., 0., 0.],
+    [ 0., 0., 1., …, 0., 0., 0.]])
+
+    If one tries to pass padded sequence into “sequences_to_matrix”, an error message is generated:
+
+    File “C:….\keras\preprocessing\text.py”, line 262, in sequences_to_matrix
+    if not seq:
+
+    ValueError: The truth value of an array with more than one element is ambiguous. Use a.any() or a.all()
+
+    Is it so that one has to do “one_hot_encoding” manually in order to make use of LSTMs in an encode-decode manner???
+
+    On the other hand, I get very good convergence (>99%) if I don’t do one_hot_encode and use a network architecture similar to http://machinelearningmastery.com/sequence-classification-lstm-recurrent-neural-networks-python-keras/
+
+    The problem arise with predictions since the last Dense layer has activation=’sigmoid’, which generates values between 0 and 1. How to make predictions in the form (Out[19]: [[1, 2, 110], [23, 5, 150], [1, 3, 17], [8, 2, 218]]) without one_hot_encode input_sequence???
+
+    The last question. If one use one_hot_encode of a sequence, embedding layer and convolution layer don’t make sense, right???
+    Reply	
+        Jason Brownlee July 9, 2017 at 10:45 am #
+
+        LSTM input is 3D [samples, timesteps, features]. Each sample will be one sequence of your input. Time steps are words or chars and features are the one hot encoded values.
+        Reply	
+    Liviu July 12, 2017 at 2:09 am #
+
+    Hello and thank you for the tutorials ! Learned a lot from them.
+
+    One question regarding scaling (or normalization): how can we make sure that the scaling results remains the same between different data sets? For example:
+    – step 1: we use some data sets to train a model (with scaling data) and then we save the trained model for future use.
+    – step 2: we import the model created at step 1 and used it to predict a prediction data set.
+
+    But: the prediction data set must also be scaled. And more than that it must be scaled with the same scaling parameters (scaled “the same way”) used to scale the model trained at step 1. Am I wrong ?
+    Or we somehow have to save the scaling object also and import it again to be used to scale the prediction data set at step 2 ?
+    Reply	
+        Jason Brownlee July 12, 2017 at 9:49 am #
+
+        Correct.
+
+        It means you must estimate the scaling parameters carefully and save them for future use.
+        Reply	
+            Lukas November 16, 2017 at 6:34 am #
+
+            Great articles Jason! Thank you so much for your dedicated work.
+
+            I am facing a similar problem to Liviu’s.
+
+            How to scale the features and the target in the initial training data, supposed in the future additional data will be available and is to be used to incrementally train the model.
+
+            If the initially available data is scaled from 0 to 1 with using the maximum value available in the data, a new maximum would shift the whole scale the model is trained on and would therefore falsify the results.
+
+            What I already know for sure is the maximum of the target to be higher in the future due to growth, but the final magnitude is absolutely not assessable.
+
+            Do you have any suggestions how to solve this problem without rescaling the whole dataset with the new max and respectively retraining the model on the whole dataset?
+
+            Thanks in advance and regards,
+            Lukas
+            Reply	
+                Jason Brownlee November 16, 2017 at 10:32 am #
+
+                You can use domain knowledge to estimate the extreme min/max values that you are ever expected to see.
+
+                Or use the same approach and estimate mean/stdev and standardize the data instead which might be more robust to large changes in scale over time.
+                Reply	
+    Emmanuel July 31, 2017 at 9:48 am #
+
+    Thanks for the good work
+    Reply	
+        Jason Brownlee July 31, 2017 at 3:48 pm #
+
+        I’m glad you found the post useful Emmanuel.
+        Reply	
+    Hai Nguyen January 12, 2018 at 2:52 am #
+
+    Thank you for your work. If I would like to scale value from pixels of images, how do i do that?
+    Reply	
+        Jason Brownlee January 12, 2018 at 5:53 am #
+
+        See this post:
+        https://machinelearningmastery.com/image-augmentation-deep-learning-keras/
+        Reply	
+    Giani February 19, 2018 at 11:51 pm #
+
+    Hi Jason, thank you a lot for your work!
+
+    I wanted to ask you if there is a major motivation to scale data in LSTM rather than in typical MLP NN.
+
+    I was using MLP and I was obtaining good results even without scaling input data while facing the same problem by using LSTMs was giving me very bad results (always constant output values).. but now normalizing inputs and outputs of LSTM I am getting even better results than MLPs.
+
+    So I was asking myself if there is a theoretical motivation why normalization is more important in LSTM than in MLP.
+
+    Thanks again,
+
+    Giani
+    Reply	
+        Jason Brownlee February 21, 2018 at 6:26 am #
+
+        Just an empirical justification, like most of applied machine learning.
+
+        Yes, I have seen better results with a rescale between 0-1 than not. Also in making data stationary can help.
+
+        My best advice is to test and see.
+        Reply	
+    Abdur Rehman Nadeem March 1, 2018 at 11:08 pm #
+
+    Hi Jason, I have a dataset in which some of the features have very small range say 0.1 – 0.001 and some features have large range say 10 – 1000 , should I normalize these features ?
+    Reply	
+        Jason Brownlee March 2, 2018 at 5:32 am #
+
+        I would recommend it and see how the treatment impacts model skill.
+        Reply	
+    Fabian Zimmer March 19, 2018 at 6:08 pm #
+
+    Hi Jason,
+
+    First of all thanks for this wealth of information that is your blog, it really helped me on my way to setting up a working recurrent neural net for a pet project of mine.
+
+    Almost all of it is working, but I am having a problem with scaling the input and output right. My time series is some historical financial data and when scaling each window of this series, so input and output together, it learns incredibly well and predictions (input and output are queried, scaled, then only the input is fed to the net) it performs accurately on never seen before data.
+
+    In real life conditions each window will not have an output series part, so I only scale the input. As those ranges are somewhat different from the signals when scaling input and output of each window together, real life predictions are really poor.
+
+    MinMax scaling the input, and MinMax scaling the output with the min max values of the input sequence (scaled output can sometimes range from 2 to -1, whereas the input is always between 1 and 0) leads to really long learning times and subpar predictions.
+
+    Am I doing something completely wrong? How would you tackle such an issue?
+
+    Thanks a lot in advance and thanks again for your time and effort you undoubtedly put into this blog.
+
+    Cheers,
+    Fabian
+    Reply	
+        Jason Brownlee March 20, 2018 at 6:13 am #
+
+        Perhaps scale manually and select min/max values that you expect will cover all possible observations in the domain for all time.
+        Reply	
+            Fabian Zimmer March 22, 2018 at 7:13 pm #
+
+            I tried that approach but the algorithm doesn’t really converge there. It’s a simple sequence of 200 observation points and 48 prediction points, using lstm multicells with t2 loss and rmsprop. Might switch to a conv rnn classifier with one hit encoded percent change in 48 timestep target, as that allows me to scale the observation sequence to -1,1.
+
+            Still a little bamboozled, is regression with large variance in the signal that big of a problem?
+            Reply	
+                Jason Brownlee March 23, 2018 at 6:05 am #
+
+                LSTM is not really suited for straight regression, it is suited for sequence prediction problems:
+                https://machinelearningmastery.com/sequence-prediction/
+                Reply	
+                    Fabian Zimmer March 23, 2018 at 6:30 am #
+
+                    I am attempting to predict a sequence of 48 time steps from a sequence of 240 time step step, though.
+
+                    If I scale on the entire window, so over 288 time steps, I get amazing training and validation results. But since I can’t do that, as during inference time I only have access to the input, I need to scale only the inputs during training and validation, too. The resulting predictions are poor at best.
+                    Jason Brownlee March 23, 2018 at 8:27 am #
+
+                    Perhaps you can use domain knowledge to estimate the min/max to be expected across all possible times?
+    Chris J March 19, 2018 at 9:19 pm #
+
+    Hi Jason,
+
+    Quick question, why do you scale your data to the range (0, 1) when the article you linked to spesificaly recommends scaling to (-1, 1), which will give zero mean?
+    Reply	
+        Jason Brownlee March 20, 2018 at 6:18 am #
+
+        I have found scaling to [0,1] results in more skillful LSTM models.
+        Reply	
+        Fabian Zimmer March 24, 2018 at 9:20 pm #
+
+        The signal, financial in nature, can be extremely volatile. What I have settled for, and what seems to give very acceptable results, is to fit the minmax scaler to the observation period with a feature range of -0.8 to 0.8. If the output, transformed with the observation fitted scaler, exceeds -1 or 1, I cap it at that. During prediction I replace those outlier values with null, so that most of the predictions in feature range are 48 time steps long, some might be shorter. Seems to work reasonably well and produces reliable and actionable insights. Thanks again for your help, greatly appreciated.
+        Reply	
+    Case March 21, 2018 at 2:45 am #
+
+    Hi Jason,
+
+    This is a great article. I am trying Keras and using some training data I manually generated and labeled. The training data is a permutation of the sequence[0, 1, 2, 3]. The output is 1 or 0. I build a sequential model using Dense layers. What I find out is that if I rescale the training data to, e.g. [0, 0.25, 0.5, 0.75], it gives me worse accuracy. Do you have any idea why this happens?
+    Reply	
+        Jason Brownlee March 21, 2018 at 6:40 am #
+
+        The model hyperparametres might need tuning for the new scaled inputs?
+        Reply	
+    Lyndon March 29, 2018 at 2:04 am #
+
+    Hi Jason,
+    I am learning how to use LSTM to predict time series (like stock price prediction). But I have a question about the data scaling.
+
+    For training data set, considering min max scaler, we already know the min and max value. But when we apply the model on validation data or test data, how do I scale the data? If we scale them in the same way, I think min and max values contain future information.
+
+    Do I misunderstand something?
+
+    Thank you!
+    Reply	
+        Jason Brownlee March 29, 2018 at 6:37 am #
+
+        If you can estimate the min/max for the domain. Then scale the data using this domain knowledge.
+        Reply	
+    Riccardo April 10, 2018 at 12:35 am #
+
+    Hi,
+
+    thanks for the post. I still haven’t understood how to deal with both scaling and masking. The two operations clearly do not commute: if I first pad my sequence, say:
+    [[ 1, 2, 3, 4 ]
+    [ 1, 2, 3, 0 ]
+    [ 1, 2, 0, 0 ]
+    [ 1, 2, 3, 0 ]]
+    And then rescale, the rescaled array does not have 0s anymore in the positions corresponding to the padded entries. How do I deal with this in Keras?
+
+    Cheers,
+    Riccardo
+    Reply	
+        Jason Brownlee April 10, 2018 at 6:21 am #
+
+        Perhaps scale first, then pad as a final step prior to modeling.
+        Reply	
+
+Leave a Reply
+
+Name (required)
+
+Email (will not be published) (required)
+
+Website
+
+Welcome to Machine Learning Mastery
+
+Hi, I'm Jason Brownlee, Ph.D.
+My goal is to make developers like YOU awesome at applied machine learning.
+
+Read More
+
+Deep Learning for Sequence Prediction
+
+Cut through the math and research papers.
+Discover 4 Models, 6 Architectures, and 14 Tutorials.
+
+Get Started With LSTMs in Python Today!
+
+    Popular
+
+    Line Plots of Air Pollution Time Series	Multivariate Time Series Forecasting with LSTMs in Keras August 14, 2017
+    Photo of a dog at the beach.	How to Develop a Deep Learning Photo Caption Generator from Scratch November 27, 2017
+    How to Use Word Embedding Layers for Deep Learning with Keras	How to Use Word Embedding Layers for Deep Learning with Keras October 4, 2017
+    How to Define an Encoder-Decoder Sequence-to-Sequence Model for Neural Machine Translation in Keras	How to Define an Encoder-Decoder Sequence-to-Sequence Model for Neural Machine Translation in Keras October 26, 2017
+    How to Develop a Neural Machine Translation System in Keras	How to Develop a Neural Machine Translation System from Scratch January 10, 2018
+    Why One-Hot Encode Data in Machine Learning?	Why One-Hot Encode Data in Machine Learning? July 28, 2017
+    How to Develop an Encoder-Decoder Model with Attention for Sequence-to-Sequence Prediction in Keras	How to Develop an Encoder-Decoder Model with Attention for Sequence-to-Sequence Prediction in Keras October 17, 2017
+    How to Reshape Input for Long Short-Term Memory Networks in Keras	How to Reshape Input Data for Long Short-Term Memory Networks in Keras August 30, 2017
+    What is the Difference Between Test and Validation Datasets?	What is the Difference Between Test and Validation Datasets? July 14, 2017
+    How to Develop an Encoder-Decoder Model for Sequence-to-Sequence Prediction in Keras	How to Develop an Encoder-Decoder Model for Sequence-to-Sequence Prediction in Keras November 2, 2017
+
+You might also like…
+
+    Your First Machine Learning Project in Python
+    Your First Neural Network in Python
+    How to Setup a Python for Machine Learning
+    Your First Classifier in Weka
+    Your First Model for Time Series Forecasting
+
+© 2018 Machine Learning Mastery. All Rights Reserved.
+
+Privacy | Disclaimer | Terms of Service | Search | Newsletter | Contact | About
+
+

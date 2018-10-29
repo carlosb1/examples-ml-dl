@@ -40,4 +40,9 @@ autoencoder.compile(optimizer='adam', loss='mse')
 autoencoder.fit(X_train, X_train, epochs=2, batch_size=32, callbacks=None)
 
 autoencoder.save('autoencoder.h5')
-autoencoder.summary()
+autoencoder.summary).output)
+
+# create encoder pa).outputt
+
+encoder = Model(input=autoencoder.input, outputs=autoencoder.get_layer('encoder').output)
+encoder.save('encoder.h5')

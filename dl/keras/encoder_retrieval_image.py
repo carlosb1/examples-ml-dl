@@ -40,9 +40,38 @@ autoencoder.compile(optimizer='adam', loss='mse')
 autoencoder.fit(X_train, X_train, epochs=2, batch_size=32, callbacks=None)
 
 autoencoder.save('autoencoder.h5')
-autoencoder.summary).output)
+autoencoder.summary()
 
 # create encoder pa).outputt
 
 encoder = Model(input=autoencoder.input, outputs=autoencoder.get_layer('encoder').output)
 encoder.save('encoder.h5')
+
+# test
+query = X_test[7]
+
+print(str(X_test.shape))
+
+X_test = np.delete(X_test, 7, axis=0)
+
+print(str(X_test.shape))
+
+codes = encoder.predict(X_test)
+query_code = encoder.predict(query.reshape(1, 28, 28, 1))
+
+from sklearn.neighbors import NearestNeighbors
+n_neigh = 5
+
+codes = codes.reshape(-1, 4 * 4 * 8)
+print(codes.shape)
+query_code = query_code.reshape(1, 4 * 4 * 8)
+print(query_code.shape)
+
+nbrs = NearestNeighbors(n_neighbors=n_neigh).fit(codes)
+
+distances, indices = nbrs.kneighbors(np.array(query_code))
+
+closest_images = X_test[indices]
+
+closest_images = closest_images.reshape(-1, 28, 28, 1)
+print(closest_images.shape)

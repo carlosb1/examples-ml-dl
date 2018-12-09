@@ -8,3 +8,5 @@ References:
 - MLAlgorithms: Reference to project with ML algorithms from Scratch
 - ipython-notebooks: python notebooks to explain ML/DL
 - python-machine-learning-book: resources for python machine learning book. 
+- https://github.com/AdilBaaj/unsupervised-image-retrieval
+- https://github.com/chen0040/keras-search-engine
